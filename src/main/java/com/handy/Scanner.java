@@ -28,7 +28,7 @@ public class Scanner {
 
         List<File> javaFiles = new ArrayList<>();
         Arrays.asList(Objects.requireNonNull(file.listFiles(File::isDirectory))).forEach(f->{
-            
+
         });
         return new HashMap<>();
     }
