@@ -1,5 +1,7 @@
 package com.handy;
 
+
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -21,7 +23,14 @@ public class Context {
      * 扫描器
      * */
     private Scanner scanner;
+    /**
+     * 类加载器
+     * */
+    private Loader loader;
 
+    public Context() {
+        loader = new Loader();
+    }
     /**
      * 构建上下文
      */
@@ -35,12 +44,12 @@ public class Context {
     /**
      * 重新加载class
      */
-    public void reloadClass() {
+    public void reloadClass() throws IOException, ClassNotFoundException {
         if (changeFilePathList == null || changeFilePathList.size() == 0) {
             return;
         }
         // TODO 重新加载类文件
-        System.out.println("class reload finished!");
+        loader.loadClass(changeFilePathList);
     }
 
     public Scanner getScanner() {

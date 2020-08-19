@@ -1,5 +1,6 @@
 package com.handy;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,11 @@ public class FileCompareTask implements Runnable {
 
             System.out.println("already changed file : "+ changeFilePathList);
 
-            context.reloadClass();
+            try {
+                context.reloadClass();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
