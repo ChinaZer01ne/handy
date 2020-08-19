@@ -1,7 +1,6 @@
 package com.handy;
 
 import java.lang.instrument.Instrumentation;
-import java.util.Arrays;
 
 /**
  * 程序入口
@@ -16,18 +15,16 @@ public class Entrance {
         context.setScanner(scanner);
         context.build();
 
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Thread already start!");
-        });
+        Thread thread = new Thread(new FileCompareTask(context));
+        System.out.println(thread.getThreadGroup().getParent());
+        thread.setDaemon(true);
+        thread.start();
 
+        System.out.println("Thread already start!");
     }
 
     public static void premain(String agentArgs) {
 
     }
+
 }
