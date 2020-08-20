@@ -3,6 +3,7 @@ package com.handy;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 上下文类，记录了整体结构
@@ -15,6 +16,7 @@ public class Context {
      * 发生变化的文件的路径
      */
     List<String> changeFilePathList = new ArrayList<>();
+
     /**
      * java文件路径和最后修改时间的映射
      */
@@ -36,7 +38,7 @@ public class Context {
      */
     public void build() {
         if (scanner == null) {
-            throw new IllegalArgumentException("scanner can not be null");
+            throw new IllegalArgumentException("scanner can not be null!");
         }
         scannedClassMap = scanner.scan(System.getProperty("user.dir"));
     }
@@ -48,7 +50,7 @@ public class Context {
         if (changeFilePathList == null || changeFilePathList.size() == 0) {
             return;
         }
-        // TODO 重新加载类文件
+        // 重新加载类文件
         loader.loadClass(changeFilePathList);
     }
 
@@ -74,6 +76,8 @@ public class Context {
 
     public void setChangeFilePathList(List<String> changeFilePathList) {
         this.changeFilePathList = changeFilePathList;
+        //this.changeFileCompilePathList = loader.getCompilePath(changeFilePathList);
     }
+
 
 }
