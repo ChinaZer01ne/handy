@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,6 +18,10 @@ import java.util.stream.Collectors;
  */
 public class Loader {
 
+    /**
+     * 自定义类加载器，用来加载类
+     */
+    private HandyClassLoader handyClassLoader = new HandyClassLoader();
     /**
      * 发生变化的文件编译到的目标路径
      */
@@ -33,34 +38,15 @@ public class Loader {
      */
     public void loadClass(List<String> changeFilePathList) throws IOException, ClassNotFoundException {
         changeFileCompilePathList = getCompilePath(changeFilePathList);
-        fullClassNameList = getFullClassNameList(changeFilePathList);
+        fullClassNameList = FileOperator.getFullClassNameList(changeFilePathList);
         //// 编译
         compileJavaFile(changeFilePathList);
         //// 加载
         //doLoadClass(changeFileCompilePathList);
-        doLoadClass(fullClassNameList);
+        doLoadClass(changeFileCompilePathList);
     }
 
-    /**
-     * 获取类的全限定类名
-     * @param changeFilePathList : java文件路径
-     * @return java.util.List<java.lang.String>
-     */
-    private List<String> getFullClassNameList(List<String> changeFilePathList) {
-        if (changeFilePathList == null || changeFilePathList.size() == 0) {
-            throw new IllegalArgumentException("No file find!");
-        }
-        return changeFilePathList.stream().map(javaFilePath -> {
-            String packagePath = javaFilePath.split("src\\\\main\\\\java")[1];
-            //if (packagePath != null && packagePath.length() > 0 && !"\\".equals(packagePath)) {
-            if (packagePath != null && packagePath.length() > 0) {
-                String fullClassPath = packagePath.replaceAll("\\\\", ".");
-                // 第一个0位置是 `.`
-                return fullClassPath.substring(1,fullClassPath.lastIndexOf(".java"));
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-    }
+
 
     /**
      * 加载类文件
@@ -71,12 +57,24 @@ public class Loader {
             throw new ClassNotFoundException("No class file can file!");
         }
 
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        for (String classFilePath : changeFileCompilePathList) {
-            Class<?> clazz = classLoader.loadClass(classFilePath);
-            System.out.println(classFilePath);
-            System.out.println(clazz.getResource("/"));
-            System.out.println(clazz + " load finished!");
+        List<Class<?>> classList = handyClassLoader.loadClass(changeFileCompilePathList);
+        for (Class<?> aClass : classList) {
+            Object o = null;
+            try {
+                o = aClass.getConstructor().newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+            //Context context = (Context) o;
+            System.out.println(Context.class.getClassLoader());
+            System.out.println(o.getClass().getClassLoader());
+            System.out.println(handyClassLoader.getParent());
         }
     }
 

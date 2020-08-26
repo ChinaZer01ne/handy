@@ -79,5 +79,8 @@ public class Context {
         //this.changeFileCompilePathList = loader.getCompilePath(changeFilePathList);
     }
 
+    public void print(){
+        System.out.println(213);
+    }
 
 }
